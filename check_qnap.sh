@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 
 if [ ! "$#" == "3" ]; then
     	echo -e "QNap-NAS-monitoring for icinga v. 1.1 - (C) martin.fuchs@trendchiller.com - 2011\n\nusage : ./check_qnap.sh <hostname> <snmp_community> <check>\nchecks: cpu, diskusage, fan, hdsmart, hdtemp, volumes, systemp, ramuse \n" && exit "3"
