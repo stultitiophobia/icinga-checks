@@ -1,1 +1,1 @@
-Shell-script to check CPU, DISK, FAN, SMART, TEMP, VOLUMES, RAM parameters of a qnap appliance with icinga or nagios.
+Shell-script to check CPU, DISK, FAN, SMART, TEMP, VOLUMES, RAM parameters of a QNAP appliance with icinga or nagios.
