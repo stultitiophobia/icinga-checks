@@ -9,12 +9,10 @@ strCheck=$3
 
 # -> DISKUSAGE -----------------------------------------------------------------
 if [ "$strCheck" == "diskusage" ]; then
-    	disk=$(snmpget -v1 -c $strCommunity -mALL $strHostname 1.3.6.1.4.1.24681.1.2.17.1.4.1 | awk '{print $4}' | sed 's/.\(.*\)/\1/')
-    	used=$(snmpget -v1 -c $strCommunity -mALL $strHostname 1.3.6.1.4.1.24681.1.2.17.1.5.1 | awk '{print $4}' | sed 's/.\(.*\)/\1/')
-    	disk=$(echo "scale=0; $disk*100" | bc -l  |  sed 's/\(.*\).../\1/')
-    	used=$(echo "scale=0; $used*100" | bc -l  |  sed 's/\(.*\).../\1/')
-    	let "PERC=(100-($used*100)/$disk)"
-    	strOutput="Belegt=$[PERC]%|'Belegt'=$[PERC]%;80;90;0;100"
+    	disk=$(snmpget -v1 -c $strCommunity -mALL $strHostname .1.3.6.1.2.1.25.2.3.1.5.33 | awk '{print $4}')
+    	used=$(snmpget -v1 -c $strCommunity -mALL $strHostname .1.3.6.1.2.1.25.2.3.1.6.33 | awk '{print $4}')
+		let "PERC=(($used*100)/$disk)"
+		strOutput="Belegt=$[PERC]%|'Belegt'=$[PERC]%;80;90;0;100"
     	if [ $PERC -ge "90" ]; then
       	echo "CRITICAL: "$strOutput
       	exit 2
