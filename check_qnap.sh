@@ -28,7 +28,7 @@ if [ "$strCheck" == "diskusage" ]; then
 
 # -> CPU -----------------------------------------------------------------------
 elif [ "$strCheck" == "cpu" ]; then
-    	CPU=$(snmpget -v1 -c $strCommunity -mALL $strHostname 1.3.6.1.4.1.24681.1.2.1.0 | awk '{print $4}' | sed 's/.\(.*\)../\1/')
+    	CPU=$(snmpget -v1 -c $strCommunity -mALL $strHostname 1.3.6.1.4.1.24681.1.2.1.0 | awk '{print $4}' | sed 's/.\(.*\).../\1/')
     	strOutput="CPU: $[CPU]%|'CPU'=$[CPU]%;80;90;0;100"
     	if [ $CPU -ge "90" ]; then
       	echo "CRITICAL: "$strOutput
