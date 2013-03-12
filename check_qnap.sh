@@ -9,8 +9,8 @@ strCheck=$3
 
 # -> DISKUSAGE -----------------------------------------------------------------
 if [ "$strCheck" == "diskusage" ]; then
-    	disk=$(snmpget -v1 -c $strCommunity -mALL $strHostname .1.3.6.1.2.1.25.2.3.1.5.33 | awk '{print $4}')
-    	used=$(snmpget -v1 -c $strCommunity -mALL $strHostname .1.3.6.1.2.1.25.2.3.1.6.33 | awk '{print $4}')
+		disk=$(snmpget -v1 -c $strCommunity -mALL $strHostname .1.3.6.1.2.1.25.2.3.1.5.33 | awk '{print $4}')
+		used=$(snmpget -v1 -c $strCommunity -mALL $strHostname .1.3.6.1.2.1.25.2.3.1.6.33 | awk '{print $4}')
 		let "PERC=(($used*100)/$disk)"
 		strOutput="Belegt=$[PERC]%|'Belegt'=$[PERC]%;80;90;0;100"
     	if [ $PERC -ge "90" ]; then
