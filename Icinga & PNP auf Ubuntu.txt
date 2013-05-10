@@ -1,0 +1,513 @@
+################################################################################
+#
+# > INSTALLATION ICINGA & NAGIOS PLUGINS & NRPE & PNP4NAGIOS & NCONF
+#   > rev. 1.4.0 / 10..05.2012
+#
+################################################################################
+
+Ubuntu 10.04.1 mit LAMP, SSH, POSTFIX
+
+apt-get install apache2 build-essential libgd2-xpm-dev libjpeg62 libjpeg62-dev libpng12-0 libpng12-dev
+apt-get install mysql-server mysql-client libdbi0 libdbi0-dev libdbd-mysql
+apt-get install php5 php5-cli php-pear php5-xmlrpc php5-xsl php5-ldap php5-soap php5-gd php5-mysql
+apt-get install libsnmp-base snmp snmpd libssl-dev
+
+
+################################################################################
+#
+# > INSTALLATION ICINGA-CLASSIC
+#
+################################################################################
+
+/usr/sbin/useradd -m icinga
+passwd icinga
+
+/usr/sbin/groupadd icinga
+/usr/sbin/groupadd icinga-cmd
+
+/usr/sbin/usermod -a -G icinga-cmd icinga
+/usr/sbin/usermod -a -G icinga-cmd www-data
+
+cd /usr/src
+
+wget http://downloads.sourceforge.net/project/icinga/icinga/1.9.0/icinga-1.9.0.tar.gz
+wget http://downloads.sourceforge.net/project/nagiosplug/nagiosplug/1.4.16/nagios-plugins-1.4.16.tar.gz
+wget http://downloads.sourceforge.net/project/nagios/nrpe-2.x/nrpe-2.13/nrpe-2.13.tar.gz
+wget http://www.monitoringexchange.org/attachment/download/Artwork/Image-Packs/Base-Images/imagepak-base.tar.tar
+wget http://www.intec.uni.cc/bin/fnagios/fnagios.tar.gz
+wget http://downloads.sourceforge.net/project/pnp4nagios/PNP-0.6/pnp4nagios-0.6.21.tar.gz
+wget http://my-plugin.de/check_multi/check_multi-0.20.current.tgz
+wget http://downloads.sourceforge.net/project/nconf/nconf/1.3.0-0/nconf-1.3.0-0.tgz
+wget http://downloads.sourceforge.net/project/nagiosql/nagiosql/NagiosQL%203.1.1/nagiosql_311.tar.gz
+wget http://labs.consol.de/wp-content/uploads/2011/10/check_hpasm-4.3.tar.gz
+
+cd /usr/src/ 
+tar xvzf icinga-1.9.0.tar.gz
+cd icinga-1.9.0
+
+./configure --with-command-group=icinga-cmd --enable-idoutils
+
+make all
+
+make install 
+  make install-init 
+make install-commandmode 
+make install-idoutils
+  make install-config
+  make install-webconf
+  make install-eventhandlers
+  
+cd /usr/local/icinga/etc
+cp idomod.cfg-sample idomod.cfg
+cp ido2db.cfg-sample ido2db.cfg
+
+broker_module=/usr/local/icinga/lib/idomod.so config_file=/usr/local/icinga/etc/idomod.cfg
+  in /usr/local/icinga/etc/icinga.cfg auskommentieren
+
+mysql -u root -p
+  
+CREATE DATABASE icinga;
+GRANT USAGE ON *.* TO 'icinga'@'localhost' IDENTIFIED BY 'icinga' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0;
+GRANT SELECT , INSERT , UPDATE , DELETE , DROP, CREATE VIEW ON icinga.* TO 'icinga'@'localhost';
+FLUSH PRIVILEGES ;
+quit
+
+cd /usr/src/icinga-1.9.0/module/idoutils/db/mysql
+mysql -u root -p icinga < mysql.sql
+
+bzw. aktualisieren:
+mysql -u root -p icinga < /usr/src/icinga-1.9.0/module/idoutils/db/mysql/upgrade/mysql-upgrade-1.9.0.sql
+
+cd /usr/src/icinga-1.9.0
+
+htpasswd -c /usr/local/icinga/etc/htpasswd.users icingaadmin
+htpasswd /usr/local/icinga/etc/htpasswd.users <weiterer user>
+
+/etc/init.d/apache2 reload
+
+
+################################################################################
+#
+# > INSTALLATION ICINGA-WEB
+#
+################################################################################
+
+cd /usr/src/
+wget http://downloads.sourceforge.net/project/icinga/icinga-web/1.9.0/icinga-web-1.9.0.tar.gz
+tar xvfz icinga-web-1.9.0.tar.gz
+
+mysql -u root -p
+
+CREATE DATABASE icinga_web;
+GRANT USAGE ON *.* TO 'icinga_web'@'localhost' IDENTIFIED BY 'icinga_web' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0;
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER, INDEX ON icinga_web.* TO 'icinga_web'@'localhost';
+quit
+
+#cd /usr/src/icinga-web-1.9.0/etc/schema/
+#mysql -u root -p icinga_web < mysql.sql
+
+#bzw. aktualisieren:
+#mysql -u root -p icinga_web < /usr/src/icinga-web-1.9.0/etc/schema/updates/mysql/mysql_v1-8-3_to_v1-9.sql
+
+
+cd /usr/src/icinga-web-1.9.0/
+./configure
+make install
+make install-apache-config
+make db-initialize
+
+bzw. aktualisieren:
+make db-upgrade
+
+a2enmod rewrite
+/etc/init.d/apache2 reload
+
+
+################################################################################
+#
+# > INSTALLATION ICINGA-WEB
+#
+################################################################################
+
+sudo apt-get install autoconf unzip openjdk-6-jre-headless
+
+cd /usr/src/
+wget http://downloads.sourceforge.net/project/icinga/icinga-mobile/0.1.0/icinga-mobile-0.1.0.zip
+unzip icinga-mobile-0.1.0.zip
+cd icinga-mobile
+
+#(evtl lib/Model/IcingaConfiguration.js anpassen)
+
+autoconf
+./configure --with-web-apache-path=/etc/apache2
+
+make compile
+make install
+make install-apache-config
+
+/etc/init.d/apache2 reload
+
+
+################################################################################
+#
+# > INSTALLATION NAGIOS-PLUGINS
+#
+################################################################################
+
+cd /usr/src
+tar xzf nagios-plugins-1.4.16.tar.gz
+cd nagios-plugins-1.4.16
+
+./configure --prefix=/usr/local/icinga --with-nagios-user=icinga --with-nagios-group=icinga --with-ssl=/usr/bin/openssl --with-ssl-lib=/usr/lib
+make
+make install
+
+
+update-rc.d ido2db defaults 50
+update-rc.d icinga defaults 51
+
+
+mkdir /usr/local/icinga/share/images/logos
+cd /usr/local/icinga/share/images/logos
+tar xvfz /usr/src/imagepak-base.tar.tar
+tar xvfz /usr/src/fnagios.tar.gz
+
+reboot
+
+
+################################################################################
+#
+# > INSTALLATION NRPE-PLUGIN
+#
+################################################################################
+
+cd /usr/src
+tar -zxvf nrpe-2.13.tar.gz
+cd nrpe-2.13
+
+./configure --with-nrpe-user=icinga --with-nrpe-group=icinga --with-nagios-user=icinga --with-nagios-group=icinga --enable-ssl --libexecdir=/usr/local/icinga/libexec/ --bindir=/usr/local/icinga/bin/
+
+make all
+make install-plugin
+
+
+################################################################################
+#
+# > INSTALLATION PNP4NAGIOS
+#
+################################################################################
+
+apt-get install rrdtool librrds-perl
+apt-get install php5 php5-cli php5-gd
+
+cd /usr/src
+tar -xvzf pnp4nagios-0.6.21.tar.gz
+cd pnp4nagios-0.6.21
+
+./configure --with-nagios-user=icinga --with-nagios-group=icinga
+
+make all
+	#make fullinstall
+
+make install
+  #make install-webconf
+  #make install-config
+  #make install-init
+
+
+vi /etc/apache2/conf.d/pnp4nagios.conf
+	AuthName "Icinga Access"
+	AuthUserFile /usr/local/icinga/etc/htpasswd.users
+
+
+vi /etc/php5/apache2/php.ini
+	magic_quotes_gpc = Off
+
+/etc/init.d/apache2 restart	
+
+einmal testen
+mv /usr/local/pnp4nagios/share/install.php /usr/local/pnp4nagios/share/install.php-alt
+
+vi /usr/local/icinga/etc/icinga.cfg
+	process_performance_data=1
+
+	+
+
+#
+# Service Performance-Daten
+#
+service_perfdata_file=/usr/local/pnp4nagios/var/service-perfdata
+service_perfdata_file_template=DATATYPE::SERVICEPERFDATA\tTIMET::$TIMET$\tHOSTNAME::$HOSTNAME$\tSERVICEDESC::$SERVICEDESC$\tSERVICEPERFDATA::$SERVICEPERFDATA$\tSERVICECHECKCOMMAND::$SERVICECHECKCOMMAND$\tHOSTSTATE::$HOSTSTATE$\tHOSTSTATETYPE::$HOSTSTATETYPE$\tSERVICESTATE::$SERVICESTATE$\tSERVICESTATETYPE::$SERVICESTATETYPE$
+service_perfdata_file_mode=a
+service_perfdata_file_processing_interval=15
+service_perfdata_file_processing_command=process-service-perfdata-file
+
+#
+# Host Performance-Daten ab Nagios 3.x
+# 
+host_perfdata_file=/usr/local/pnp4nagios/var/host-perfdata
+host_perfdata_file_template=DATATYPE::HOSTPERFDATA\tTIMET::$TIMET$\tHOSTNAME::$HOSTNAME$\tHOSTPERFDATA::$HOSTPERFDATA$\tHOSTCHECKCOMMAND::$HOSTCHECKCOMMAND$\tHOSTSTATE::$HOSTSTATE$\tHOSTSTATETYPE::$HOSTSTATETYPE$
+host_perfdata_file_mode=a
+host_perfdata_file_processing_interval=15
+host_perfdata_file_processing_command=process-host-perfdata-file
+
+
+vi /usr/local/icinga/etc/objects/commands.cfg
+
+define command{
+       command_name    process-service-perfdata-file
+       command_line    /bin/mv /usr/local/pnp4nagios/var/service-perfdata /usr/local/pnp4nagios/var/spool/service-perfdata.$TIMET$
+}
+
+define command{
+       command_name    process-host-perfdata-file
+       command_line    /bin/mv /usr/local/pnp4nagios/var/host-perfdata /usr/local/pnp4nagios/var/spool/host-perfdata.$TIMET$
+}
+
+
+  #mv /usr/local/pnp4nagios/etc/npcd.cfg-sample /usr/local/pnp4nagios/etc/npcd.cfg
+/usr/local/pnp4nagios/bin/npcd -d -f /usr/local/pnp4nagios/etc/npcd.cfg
+
+vi /usr/local/pnp4nagios/etc/config.php & config_local.php	
+	$conf['nagios_base'] = "/icinga/cgi-bin";
+
+cp /usr/src/pnp4nagios-0.6.21/contrib/ssi/status-header.ssi /usr/local/icinga/share/ssi
+chmod 604 /usr/local/icinga/share/ssi/status-header.ssi
+
+vi /usr/local/icinga/etc/objects/templates.cfg
+
+define host {
+   name       host-pnp
+;   action_url /pnp4nagios/index.php/graph?host=$HOSTNAME$&srv=_HOST_
+   action_url /pnp4nagios/graph?host=$HOSTNAME$&srv=_HOST_' class='tips' rel='/pnp4nagios/popup?host=$HOSTNAME$&srv=_HOST_
+   register   0
+}
+
+define service {
+   name       srv-pnp
+;   action_url /pnp4nagios/index.php/graph?host=$HOSTNAME$&srv=$SERVICEDESC$
+   action_url /pnp4nagios/graph?host=$HOSTNAME$&srv=$SERVICEDESC$' class='tips' rel='/pnp4nagios/popup?host=$HOSTNAME$&srv=$SERVICEDESC$
+   register   0
+}
+
+a2enmod rewrite
+/etc/init.d/apache2 force-reload
+update-rc.d npcd defaults
+/etc/init.d/icinga reload
+
+
+Es solten in folgenden Dateien die Pfade /nagios durch /icinga ersetzt und die Sprache auf de_DE festgelegt werden:
+	/usr/local/pnp4nagios/etc/
+		config_local.php	
+		config.php
+
+################################################################################
+#
+# > INSTALLATION Check-Multi
+#
+################################################################################
+
+cd /usr/src
+tar xvzf check_multi-0.20.current.tgz
+
+cd check_multi-0.20
+
+./configure --prefix=/usr/local/icinga/ --with-nagios-name=icinga --with-nagios-user=icinga --with-nagios-group=icinga
+make all
+make install
+
+make install-contrib
+make install-config
+
+
+################################################################################
+#
+# > INSTALLATION NagiosQL
+#
+################################################################################
+
+apt-get install php-html-template-it
+cd /usr/src/
+tar xzfv nagiosql_311.tar.gz
+chown -R www-data:www-data /var/www/nagiosql
+
+mkdir /etc/nagiosql/hosts
+mkdir /etc/nagiosql/services
+mkdir /etc/nagiosql/backup
+mkdir /etc/nagiosql/backup/hosts
+mkdir /etc/nagiosql/backup/services
+
+-> icinga.conf (config Direktiven)
+   cfg_file=/etc/nagiosql/contacttemplates.cfg
+   cfg_file=/etc/nagiosql/contactgroups.cfg
+   cfg_file=/etc/nagiosql/contacts.cfg
+   cfg_file=/etc/nagiosql/timeperiods.cfg
+   cfg_file=/etc/nagiosql/commands.cfg
+   cfg_file=/etc/nagiosql/hostgroups.cfg
+   cfg_file=/etc/nagiosql/servicegroups.cfg
+   cfg_dir=/etc/nagiosql/hosts
+   cfg_dir=/etc/nagiosql/services
+   cfg_file=/etc/nagiosql/hosttemplates.cfg
+   cfg_file=/etc/nagiosql/servicetemplates.cfg
+   cfg_file=/etc/nagiosql/servicedependencies.cfg
+   cfg_file=/etc/nagiosql/serviceescalations.cfg
+   cfg_file=/etc/nagiosql/hostdependencies.cfg
+   cfg_file=/etc/nagiosql/hostescalations.cfg
+   cfg_file=/etc/nagiosql/hostextinfo.cfg
+   cfg_file=/etc/nagiosql/serviceextinfo.cfg 
+
+touch /etc/nagiosql/contacttemplates.cfg
+touch /etc/nagiosql/contactgroups.cfg
+touch /etc/nagiosql/contacts.cfg
+touch /etc/nagiosql/timeperiods.cfg
+touch /etc/nagiosql/commands.cfg
+touch /etc/nagiosql/hostgroups.cfg
+touch /etc/nagiosql/servicegroups.cfg
+touch /etc/nagiosql/hosttemplates.cfg
+touch /etc/nagiosql/servicetemplates.cfg
+touch /etc/nagiosql/servicedependencies.cfg
+touch /etc/nagiosql/serviceescalations.cfg
+touch /etc/nagiosql/hostdependencies.cfg
+touch /etc/nagiosql/hostescalations.cfg
+touch /etc/nagiosql/hostextinfo.cfg
+touch /etc/nagiosql/serviceextinfo.cfg
+
+#chgrp www-data /usr/local/icinga/etc
+chgrp www-data /etc/nagios/icinga.cfg
+chgrp www-data /etc/nagios/cgi.cfg
+#chmod 775 /usr/local/icinga/etc
+chmod 664 /etc/nagios/icinga.cfg
+chmod 664 /etc/nagios/cgi.cfg
+
+chmod -R 6755 /etc/nagiosql
+chown -R www-data.icinga /etc/nagiosql
+
+chown icinga.www-data /usr/local/icinga/bin/icinga
+chmod 750 /usr/local/icinga/bin/icinga
+
+chown www-data.icinga /usr/local/icinga/var/spool/checkresults
+
+
+################################################################################
+#
+# > INSTALLATION NConf
+#
+################################################################################
+
+cd /usr/src/
+tar xzfv nconf-1.3.0-0.tgz
+mv nconf /var/www
+chown -R www-data:www-data /var/www/nconf
+
+nano /etc/apache2/conf.d/nconf.conf
+
+Copy and paste the following
+
+Alias /nconf /DATEN/webapp/nconf
+<DirectoryMatch /DATEN/webapp/nconf>
+
+        Options None
+        AllowOverride None
+        Order allow,deny
+        allow from 192.168.1.0/24
+        # allow from all
+        # Order deny,allow
+        # Deny from all
+        # Allow from 127.0.0.1
+        AuthType Basic
+        AuthName "Icinga Access"
+        AuthUserFile /usr/local/icinga/etc/htpasswd.users
+        Require valid-user
+
+</DirectoryMatch>
+
+/etc/init.d/apache2 reload
+
+mysql -u root -p
+
+CREATE DATABASE nconf; GRANT USAGE ON *.* TO 'nconf'@'localhost' IDENTIFIED BY 'PASSWORD' WITH MAX_QUERIES_PER_HOUR 0 MAX_CONNECTIONS_PER_HOUR 0 MAX_UPDATES_PER_HOUR 0; GRANT ALL PRIVILEGES ON nconf.* TO 'nconf'@'localhost';
+FLUSH PRIVILEGES ;
+quit
+
+Goto http://my icinga server/nconf/INSTALL.php (case-sensitive) and follow configuration steps.
+Enter 'nconf' for DBNAME
+Enter 'nconf' for DBUSER
+Enter 'PASSWORD' for DBPASS.  Click Next.
+Enter '/usr/local/icinga/bin/icinga' for NAGIOS_BIN. Click next then next again.
+
+rm -R /var/www/nconf/INSTALL /var/www/nconf/UPDATE /var/www/nconf/INSTALL.php /var/www/nconf/UPDATE.php
+chgrp www-data /usr/local/icinga/bin/icinga
+
+Configure icinga.cfg file to include Nconf cfg's.
+
+nano /usr/local/icinga/etc/icinga.cfg
+
+Comment out all 'OBJECT CONFIGURATION FILES' i.e. all lines that start with 'cfg_file=' and add the following:
+
+#Nconf configuration dirs
+cfg_dir=/usr/local/icinga/etc/objects/global
+cfg_dir=/usr/local/icinga/etc/objects/Default_collector/
+
+Customize the Nconf deployment script to deploy configuration files to cfg_dir's.
+
+nano /var/www/nconf/ADD-ONS/deploy_local.sh
+
+Make sure it looks like this:
+
+#!/bin/bash
+OUTPUT_DIR="/var/www/nconf/output/"
+NAGIOS_DIR="/usr/local/icinga/etc/objects/"
+TEMP_DIR=${NAGIOS_DIR}"import/"
+CONF_ARCHIVE="NagiosConfig.tgz"
+if [ ! -e ${TEMP_DIR} ] ; then
+mkdir -p ${TEMP_DIR}
+fi
+if [ ${OUTPUT_DIR}${CONF_ARCHIVE} -nt ${TEMP_DIR}${CONF_ARCHIVE} ] ; then
+cp -p ${OUTPUT_DIR}${CONF_ARCHIVE} ${TEMP_DIR}${CONF_ARCHIVE}
+tar -xf ${TEMP_DIR}${CONF_ARCHIVE} -C ${NAGIOS_DIR}
+/etc/init.d/icinga reload
+fi
+exit
+
+chmod +x /var/www/nconf/ADD-ONS/deploy_local.sh
+
+---
+
+Add it to crontab to run it on a regular interval.
+
+crontab -e
+
+Add the following line to run it every 10mins.
+
+*/10 * * * * /var/www/nconf/ADD-ONS/deploy_local.sh
+
+Copy nconf base images to Icinga images directory.
+sudo cp -R /var/www/nconf/img/logos/base/ /usr/local/icinga/share/images/logos/
+
+
+################################################################################
+#
+# > INSTALLATION CHECK_HPASM
+#
+################################################################################
+
+apt-get install libnet-snmp-perl
+
+cd /usr/src
+tar xzf check_hpasm-4.3.tar.gz
+cd check_hpasm-4.3
+
+./configure --prefix=/usr/local/icinga --with-nagios-user=icinga --with-nagios-group=icinga
+make
+make install
+
+================================================================================
+
+apt-get install libnagios-plugin-perl libxml-simple-perl libio-socket-ssl-perl
+
+cd /usr/local/icinga/libexec
+wget http://www.monitoringexchange.org/attachment/download/Check-Plugins/Hardware/Server-%2528Manufacturer%2529/HP-%2528Compaq%2529/check_ilo2_health/check_ilo2_health-pl
+chmod +x check_ilo2_health-pl
+
+================================================================================
+
