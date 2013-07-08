@@ -77,7 +77,7 @@ cd /usr/src/icinga-1.9.3/module/idoutils/db/mysql
 mysql -u root -p icinga < mysql.sql
 
 bzw. aktualisieren:
-mysql -u root -p icinga < /usr/src/icinga-1.9.1/module/idoutils/db/mysql/upgrade/mysql-upgrade-1.9.0.sql
+mysql -u root -p icinga < /usr/src/icinga-1.9.3/module/idoutils/db/mysql/upgrade/mysql-upgrade-1.9.0.sql
 
 cd /usr/src/icinga-1.9.3
 
