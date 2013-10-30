@@ -1,7 +1,7 @@
 ################################################################################
 #
 # > INSTALLATION ICINGA & NAGIOS PLUGINS & NRPE & PNP4NAGIOS & NCONF
-#   > rev. 1.4.4 / 07.07.2013
+#   > rev. 1.5.0 / 19.10.2013
 #
 ################################################################################
 
@@ -30,8 +30,8 @@ passwd icinga
 
 cd /usr/src
 
-wget http://downloads.sourceforge.net/project/icinga/icinga/1.9.3/icinga-1.9.3.tar.gz
-wget http://downloads.sourceforge.net/project/nagiosplug/nagiosplug/1.4.16/nagios-plugins-1.4.16.tar.gz
+wget http://downloads.sourceforge.net/project/icinga/icinga/1.10.0/icinga-1.10.0.tar.gz
+wget https://www.nagios-plugins.org/download/nagios-plugins-1.5.tar.gz
 wget http://downloads.sourceforge.net/project/nagios/nrpe-2.x/nrpe-2.13/nrpe-2.13.tar.gz
 wget http://www.monitoringexchange.org/attachment/download/Artwork/Image-Packs/Base-Images/imagepak-base.tar.tar
 wget http://www.intec.uni.cc/bin/fnagios/fnagios.tar.gz
@@ -43,8 +43,8 @@ wget http://labs.consol.de/wp-content/uploads/2011/10/check_hpasm-4.3.tar.gz
 wget http://www.thomas-krenn.com/en/oss/ipmi-plugin/check_ipmi_sensor_v3.1.tar.gz
 
 cd /usr/src/ 
-tar xvzf icinga-1.9.3.tar.gz
-cd icinga-1.9.3
+tar xvzf icinga-1.10.0.tar.gz
+cd icinga-1.10.0
 
 ./configure --with-command-group=icinga-cmd --enable-idoutils
 
@@ -73,17 +73,18 @@ GRANT SELECT , INSERT , UPDATE , DELETE , DROP, CREATE VIEW ON icinga.* TO 'icin
 FLUSH PRIVILEGES ;
 quit
 
-cd /usr/src/icinga-1.9.3/module/idoutils/db/mysql
+cd /usr/src/icinga-1.10.0/module/idoutils/db/mysql
 mysql -u root -p icinga < mysql.sql
 
 bzw. aktualisieren:
-mysql -u root -p icinga < /usr/src/icinga-1.9.3/module/idoutils/db/mysql/upgrade/mysql-upgrade-1.9.0.sql
+mysql -u root -p icinga < /usr/src/icinga-1.10.0/module/idoutils/db/mysql/upgrade/mysql-upgrade-1.10.0.sql
 
-cd /usr/src/icinga-1.9.3
+cd /usr/src/icinga-1.10.0
 
 htpasswd -c /usr/local/icinga/etc/htpasswd.users icingaadmin
 htpasswd /usr/local/icinga/etc/htpasswd.users <weiterer user>
 
+/etc/init.d/ido2db restart
 /etc/init.d/apache2 reload
 
 
@@ -94,8 +95,8 @@ htpasswd /usr/local/icinga/etc/htpasswd.users <weiterer user>
 ################################################################################
 
 cd /usr/src/
-wget http://downloads.sourceforge.net/project/icinga/icinga-web/1.9.0/icinga-web-1.9.0.tar.gz
-tar xvfz icinga-web-1.9.0.tar.gz
+wget http://downloads.sourceforge.net/project/icinga/icinga-web/1.10.0/icinga-web-1.10.0.tar.gz
+tar xvfz icinga-web-1.10.0.tar.gz
 
 mysql -u root -p
 
@@ -104,15 +105,16 @@ GRANT USAGE ON *.* TO 'icinga_web'@'localhost' IDENTIFIED BY 'icinga_web' WITH M
 GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER, INDEX ON icinga_web.* TO 'icinga_web'@'localhost';
 quit
 
-	#cd /usr/src/icinga-web-1.9.0/etc/schema/
-	#mysql -u root -p icinga_web < mysql.sql
-	#bzw. aktualisieren:
-	#mysql -u root -p icinga_web < /usr/src/icinga-web-1.9.0/etc/schema/updates/mysql/mysql_v1-8-3_to_v1-9.sql
+	# cd /usr/src/icinga-web-1.10.0/etc/schema/
+	# mysql -u root -p icinga_web < mysql.sql
+	
+	# bzw. aktualisieren:
+	# mysql -u root -p icinga_web < /usr/src/icinga-web-1.10.0/etc/schema/updates/mysql/mysql_v1-9-1_to_1-10-0.sql
 
-cd /usr/src/icinga-web-1.9.0/
+cd /usr/src/icinga-web-1.10.0/
 ./configure
 make install
-make install-apache-config
+	make install-apache-config
 make install-done
 make db-initialize
 
@@ -156,8 +158,8 @@ make install-apache-config
 ################################################################################
 
 cd /usr/src
-tar xzf nagios-plugins-1.4.16.tar.gz
-cd nagios-plugins-1.4.16
+tar xzf nagios-plugins-1.5.tar.gz
+cd nagios-plugins-1.5
 
 ./configure --prefix=/usr/local/icinga --with-nagios-user=icinga --with-nagios-group=icinga --with-ssl=/usr/bin/openssl --with-ssl-lib=/usr/lib
 make
