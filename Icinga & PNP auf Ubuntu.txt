@@ -19,6 +19,8 @@ apt-get install libsnmp-base snmp snmpd libssl-dev
 #
 ################################################################################
 
+sudo -s
+
 /usr/sbin/useradd -m icinga
 passwd icinga
 
@@ -30,7 +32,7 @@ passwd icinga
 
 cd /usr/src
 
-wget http://downloads.sourceforge.net/project/icinga/icinga/1.10.0/icinga-1.10.0.tar.gz
+wget http://downloads.sourceforge.net/project/icinga/icinga/1.10.1/icinga-1.10.1.tar.gz
 wget https://www.nagios-plugins.org/download/nagios-plugins-1.5.tar.gz
 wget http://downloads.sourceforge.net/project/nagios/nrpe-2.x/nrpe-2.13/nrpe-2.13.tar.gz
 wget http://www.monitoringexchange.org/attachment/download/Artwork/Image-Packs/Base-Images/imagepak-base.tar.tar
@@ -43,8 +45,8 @@ wget http://labs.consol.de/wp-content/uploads/2011/10/check_hpasm-4.3.tar.gz
 wget http://www.thomas-krenn.com/en/oss/ipmi-plugin/check_ipmi_sensor_v3.1.tar.gz
 
 cd /usr/src/ 
-tar xvzf icinga-1.10.0.tar.gz
-cd icinga-1.10.0
+tar xvzf icinga-1.10.1.tar.gz
+cd icinga-1.10.1
 
 ./configure --with-command-group=icinga-cmd --enable-idoutils
 
@@ -73,13 +75,13 @@ GRANT SELECT , INSERT , UPDATE , DELETE , DROP, CREATE VIEW ON icinga.* TO 'icin
 FLUSH PRIVILEGES ;
 quit
 
-cd /usr/src/icinga-1.10.0/module/idoutils/db/mysql
+cd /usr/src/icinga-1.10.1/module/idoutils/db/mysql
 mysql -u root -p icinga < mysql.sql
 
 bzw. aktualisieren:
-mysql -u root -p icinga < /usr/src/icinga-1.10.0/module/idoutils/db/mysql/upgrade/mysql-upgrade-1.10.0.sql
+mysql -u root -p icinga < /usr/src/icinga-1.10.1/module/idoutils/db/mysql/upgrade/mysql-upgrade-1.10.0.sql
 
-cd /usr/src/icinga-1.10.0
+cd /usr/src/icinga-1.10.1
 
 htpasswd -c /usr/local/icinga/etc/htpasswd.users icingaadmin
 htpasswd /usr/local/icinga/etc/htpasswd.users <weiterer user>
