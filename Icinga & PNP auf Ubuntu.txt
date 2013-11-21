@@ -35,7 +35,7 @@ cd /usr/src
 wget http://downloads.sourceforge.net/project/icinga/icinga/1.10.1/icinga-1.10.1.tar.gz
 wget https://www.nagios-plugins.org/download/nagios-plugins-1.5.tar.gz
 wget http://downloads.sourceforge.net/project/nagios/nrpe-2.x/nrpe-2.13/nrpe-2.13.tar.gz
-wget http://www.monitoringexchange.org/attachment/download/Artwork/Image-Packs/Base-Images/imagepak-base.tar.tar
+wget https://www.monitoringexchange.org/attachment/download/Artwork/Image-Packs/Base-Images/imagepak-base.tar.tar
 wget http://www.intec.uni.cc/bin/fnagios/fnagios.tar.gz
 wget http://downloads.sourceforge.net/project/pnp4nagios/PNP-0.6/pnp4nagios-0.6.21.tar.gz
 wget http://my-plugin.de/check_multi/check_multi-0.20.current.tgz
