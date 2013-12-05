@@ -19,6 +19,8 @@ apt-get install libsnmp-base snmp snmpd libssl-dev
 #
 ################################################################################
 
+sudo -s
+
 /usr/sbin/useradd -m icinga
 passwd icinga
 
