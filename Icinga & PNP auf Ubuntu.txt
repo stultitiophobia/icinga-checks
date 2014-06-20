@@ -79,13 +79,13 @@ GRANT SELECT , INSERT , UPDATE , DELETE , DROP, CREATE VIEW ON icinga.* TO 'icin
 FLUSH PRIVILEGES ;
 quit
 
-cd /usr/src/icinga-1.11.4/module/idoutils/db/mysql
+cd /usr/src/icinga-1.11.5/module/idoutils/db/mysql
 mysql -u root -p icinga < mysql.sql
 
 bzw. aktualisieren:
-mysql -u root -p icinga < /usr/src/icinga-1.11.4/module/idoutils/db/mysql/upgrade/mysql-upgrade-1.11.3.sql
+mysql -u root -p icinga < /usr/src/icinga-1.11.5/module/idoutils/db/mysql/upgrade/mysql-upgrade-1.11.3.sql
 
-cd /usr/src/icinga-1.11.4
+cd /usr/src/icinga-1.11.5
 
 htpasswd -c /usr/local/icinga/etc/htpasswd.users icingaadmin
 htpasswd /usr/local/icinga/etc/htpasswd.users <weiterer user>
