@@ -1,7 +1,7 @@
 ################################################################################
 #
 # > INSTALLATION ICINGA & NAGIOS PLUGINS & NRPE & PNP4NAGIOS & NCONF
-#   > rev. 1.6.2 / 06.06.2014
+#   > rev. 1.6.3 / 20.06.2014
 #
 ################################################################################
 
@@ -34,7 +34,7 @@ passwd icinga
 
 cd /usr/src
 
-wget https://github.com/Icinga/icinga-core/releases/download/v1.11.4/icinga-1.11.4.tar.gz
+wget https://github.com/Icinga/icinga-core/releases/download/v1.11.5/icinga-1.11.5.tar.gz
 wget https://github.com/Icinga/icinga-web/releases/download/v1.11.0/icinga-web-1.11.0.tar.gz
 wget https://github.com/Icinga/icinga-reports/releases/download/v1.10.0/icinga-reports-1.10.0.tar.gz
 wget https://www.monitoring-plugins.org/download/nagios-plugins-1.5.tar.gz
@@ -49,8 +49,8 @@ wget http://labs.consol.de/wp-content/uploads/2011/10/check_hpasm-4.3.tar.gz
 wget http://www.thomas-krenn.com/en/oss/ipmi-plugin/check_ipmi_sensor_v3.1.tar.gz
 
 cd /usr/src/ 
-tar xvzf icinga-1.11.4.tar.gz
-cd icinga-1.11.4
+tar xvzf icinga-1.11.5.tar.gz
+cd icinga-1.11.5
 
 ./configure --with-command-group=icinga-cmd --enable-idoutils
 
@@ -79,13 +79,13 @@ GRANT SELECT , INSERT , UPDATE , DELETE , DROP, CREATE VIEW ON icinga.* TO 'icin
 FLUSH PRIVILEGES ;
 quit
 
-cd /usr/src/icinga-1.11.4/module/idoutils/db/mysql
+cd /usr/src/icinga-1.11.5/module/idoutils/db/mysql
 mysql -u root -p icinga < mysql.sql
 
 bzw. aktualisieren:
-mysql -u root -p icinga < /usr/src/icinga-1.11.4/module/idoutils/db/mysql/upgrade/mysql-upgrade-1.11.3.sql
+mysql -u root -p icinga < /usr/src/icinga-1.11.5/module/idoutils/db/mysql/upgrade/mysql-upgrade-1.11.3.sql
 
-cd /usr/src/icinga-1.11.4
+cd /usr/src/icinga-1.11.5
 
 htpasswd -c /usr/local/icinga/etc/htpasswd.users icingaadmin
 htpasswd /usr/local/icinga/etc/htpasswd.users <weiterer user>
