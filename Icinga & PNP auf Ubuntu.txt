@@ -1,7 +1,7 @@
 ################################################################################
 #
 # > INSTALLATION ICINGA & NAGIOS PLUGINS & NRPE & PNP4NAGIOS & NCONF
-#   > rev. 1.6.4 / 07.08.2014
+#   > rev. 1.6.5 / 09.09.2014
 #
 ################################################################################
 
@@ -34,8 +34,8 @@ passwd icinga
 
 cd /usr/src
 
-wget https://github.com/Icinga/icinga-core/releases/download/v1.11.6/icinga-1.11.6.tar.gz
-wget https://github.com/Icinga/icinga-web/releases/download/v1.11.1/icinga-web-1.11.1.tar.gz
+wget https://github.com/Icinga/icinga-core/releases/download/v1.11.7/icinga-1.11.7.tar.gz
+wget https://github.com/Icinga/icinga-web/releases/download/v1.11.2/icinga-web-1.11.2.tar.gz
 wget https://github.com/Icinga/icinga-reports/releases/download/v1.10.0/icinga-reports-1.10.0.tar.gz
 wget https://www.monitoring-plugins.org/download/nagios-plugins-1.5.tar.gz
 wget http://downloads.sourceforge.net/project/nagios/nrpe-2.x/nrpe-2.13/nrpe-2.13.tar.gz
@@ -49,8 +49,8 @@ wget http://labs.consol.de/wp-content/uploads/2011/10/check_hpasm-4.3.tar.gz
 wget http://www.thomas-krenn.com/en/oss/ipmi-plugin/check_ipmi_sensor_v3.1.tar.gz
 
 cd /usr/src/ 
-tar xvzf icinga-1.11.6.tar.gz
-cd icinga-1.11.6
+tar xvzf icinga-1.11.7.tar.gz
+cd icinga-1.11.7
 
 ./configure --with-command-group=icinga-cmd --enable-idoutils
 
@@ -79,13 +79,13 @@ GRANT SELECT , INSERT , UPDATE , DELETE , DROP, CREATE VIEW ON icinga.* TO 'icin
 FLUSH PRIVILEGES ;
 quit
 
-cd /usr/src/icinga-1.11.6/module/idoutils/db/mysql
+cd /usr/src/icinga-1.11.7/module/idoutils/db/mysql
 mysql -u root -p icinga < mysql.sql
 
 bzw. aktualisieren:
-mysql -u root -p icinga < /usr/src/icinga-1.11.6/module/idoutils/db/mysql/upgrade/mysql-upgrade-1.11.6.sql
+mysql -u root -p icinga < /usr/src/icinga-1.11.7/module/idoutils/db/mysql/upgrade/mysql-upgrade-1.11.7.sql
 
-cd /usr/src/icinga-1.11.6
+cd /usr/src/icinga-1.11.7
 
 htpasswd -c /usr/local/icinga/etc/htpasswd.users icingaadmin
 htpasswd /usr/local/icinga/etc/htpasswd.users <weiterer user>
@@ -102,7 +102,7 @@ htpasswd /usr/local/icinga/etc/htpasswd.users <weiterer user>
 ################################################################################
 
 cd /usr/src/
-tar xvfz icinga-web-1.11.1.tar.gz
+tar xvfz icinga-web-1.11.2.tar.gz
 
 mysql -u root -p
 
@@ -115,9 +115,9 @@ quit
 	# mysql -u root -p icinga_web < mysql.sql
 	
 	# bzw. aktualisieren:
-	# mysql -u root -p icinga_web < /usr/src/icinga-web-1.11.1/etc/schema/updates/mysql/mysql_v1-10-0_to_1-10-1.sql
+	# mysql -u root -p icinga_web < /usr/src/icinga-web-1.11.2/etc/schema/updates/mysql/mysql_v1-11_to_1-11-2.sql
 
-cd /usr/src/icinga-web-1.11.1/
+cd /usr/src/icinga-web-1.11.2/
 ./configure
 make install
 	make install-apache-config
