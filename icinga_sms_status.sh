@@ -1,9 +1,9 @@
 #!/bin/bash
 processname=icinga
 icingacontacts=/usr/local/icinga/etc/buerokompetenz/kontakte.cfg
-statuscontacts=/var/spool/sms/icinga_sms_contatcs
-smsheader=/var/spool/sms/icinga_sms_status_header
-smsbody=/var/spool/sms/icinga_sms_status_body
+statuscontacts=/var/spool/sms/icinga_sms_contacts
+smsheader=/var/spool/sms/sms_status_header
+smsbody=/var/spool/sms/sms_status_body
 smsoutdir=/var/spool/sms/outgoing
 timestamp=$(date +"%d.%m.%Y")
 
