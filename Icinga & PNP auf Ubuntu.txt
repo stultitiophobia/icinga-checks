@@ -1,7 +1,7 @@
 ################################################################################
 #
 # > INSTALLATION ICINGA & NAGIOS PLUGINS & NRPE & PNP4NAGIOS & NCONF
-#   > rev. 1.6.5 / 09.09.2014
+#   > rev. 1.6.6 / 02.11.2015
 #
 ################################################################################
 
@@ -11,7 +11,7 @@ apt-get install apache2 build-essential libgd2-xpm-dev
 # breaks dependencies -> ubuntu 10.04.3
 # apt-get install libjpeg62 libjpeg62-dev libpng12-0 libpng12-dev
 apt-get install mysql-server mysql-client libdbi0 libdbi0-dev libdbd-mysql
-apt-get install php5 php5-cli php-pear php5-xmlrpc php5-xsl php5-ldap php5-soap php5-gd php5-mysql
+apt-get install php5 php5-cli php-pear php5-xmlrpc php5-xsl php5-ldap php-soap php5-gd php5-mysql
 apt-get install libsnmp-base snmp snmpd libssl-dev
 
 
@@ -34,7 +34,7 @@ passwd icinga
 
 cd /usr/src
 
-wget https://github.com/Icinga/icinga-core/releases/download/v1.11.7/icinga-1.11.7.tar.gz
+wget https://github.com/Icinga/icinga-core/releases/download/v1.13.3/icinga-1.13.3.tar.gz
 wget https://github.com/Icinga/icinga-web/releases/download/v1.11.2/icinga-web-1.11.2.tar.gz
 wget https://github.com/Icinga/icinga-reports/releases/download/v1.10.0/icinga-reports-1.10.0.tar.gz
 wget https://www.monitoring-plugins.org/download/nagios-plugins-1.5.tar.gz
@@ -49,8 +49,8 @@ wget http://labs.consol.de/wp-content/uploads/2011/10/check_hpasm-4.3.tar.gz
 wget http://www.thomas-krenn.com/en/oss/ipmi-plugin/check_ipmi_sensor_v3.1.tar.gz
 
 cd /usr/src/ 
-tar xvzf icinga-1.11.7.tar.gz
-cd icinga-1.11.7
+tar xvzf icinga-1.13.3.tar.gz
+cd icinga-1.13.3
 
 ./configure --with-command-group=icinga-cmd --enable-idoutils
 
@@ -79,15 +79,16 @@ GRANT SELECT , INSERT , UPDATE , DELETE , DROP, CREATE VIEW ON icinga.* TO 'icin
 FLUSH PRIVILEGES ;
 quit
 
-cd /usr/src/icinga-1.11.7/module/idoutils/db/mysql
+cd /usr/src/icinga-1.13.3/module/idoutils/db/mysql
 mysql -u root -p icinga < mysql.sql
 
 bzw. aktualisieren:
-mysql -u root -p icinga < /usr/src/icinga-1.11.7/module/idoutils/db/mysql/upgrade/mysql-upgrade-1.11.7.sql
+mysql -u root -p icinga < /usr/src/icinga-1.13.3/module/idoutils/db/mysql/upgrade/mysql-upgrade-1.13.3.sql
 
-cd /usr/src/icinga-1.11.7
+cd /usr/src/icinga-1.13.3
 
 htpasswd -c /usr/local/icinga/etc/htpasswd.users icingaadmin
+htpasswd -c /usr/local/icinga/etc/htpasswd.users jreppin
 htpasswd /usr/local/icinga/etc/htpasswd.users <weiterer user>
 
 /etc/init.d/ido2db restart
