@@ -52,7 +52,7 @@ cd /usr/src/
 tar xvzf icinga-1.13.3.tar.gz
 cd icinga-1.13.3
 
-./configure --with-command-group=icinga-cmd --enable-idoutils
+./configure --with-command-group=icinga-cmd --enable-idoutils prefix=/user/local/icinga/
 
 make all
 
